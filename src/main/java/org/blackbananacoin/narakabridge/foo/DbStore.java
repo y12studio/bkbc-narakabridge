@@ -25,7 +25,7 @@ public class DbStore {
 	}
 
 	public static void main(String[] args) {
-		File dbf = new File("testdata/example.leveldb");
+		File dbf = new File("testdata/leveldb");
 		System.out.println(dbf.getAbsolutePath());
 		//checkState(dbf.exists() && dbf.isFile());
 		try {
