@@ -1,4 +1,5 @@
-package org.blackbananacoin.narakabridge;
+package org.blackbananacoin.narakabridge.foo;
+
 
 public class TxObj {
 	

@@ -20,8 +20,14 @@ import static com.google.common.base.Preconditions.checkState;
 
 import java.util.List;
 
+import org.blackbananacoin.narakabridge.foo.Address;
+import org.blackbananacoin.narakabridge.foo.BlockObj;
+import org.blackbananacoin.narakabridge.foo.Message;
+import org.blackbananacoin.narakabridge.foo.MsgRespond;
+import org.blackbananacoin.narakabridge.foo.TxObj;
 import org.bouncycastle.jcajce.provider.digest.SHA3;
 import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
+import org.bouncycastle.util.encoders.Hex;
 
 /**
  * @author user http://ethereum.org/ethereum.html
@@ -40,40 +46,12 @@ public class EthereumClient {
 	 * @return
 	 */
 	public MsgRespond readMessage(Message msg) {
-		DigestSHA3 md = new SHA3.Digest256();
-		md.update("1234".getBytes());
-		byte[] digest = md.digest();
 		BlockObj blockCurrent = getBlockCurrent();
+		byte[] digest = hashSha3(msg.getData());
 		MsgRespond resp = null;
 		if (!isExistMessage(digest)) {
 			ParseType type = parseMsg(digest);
 			switch (type) {
-			case BLOCK:
-				BlockObj block = buildBlockObj(msg);
-				// 3
-				checkState(isBlockParentInDb(block.getParent()));
-				// 4 GHOST select
-				checkState(isBlockParentAndUnclesSameParent(block.getUncles()));
-				// 5
-				List<TxObj> txlist = getTxList();
-				checkState(isStateUpdaterOutputNotSame(block.getParent(),
-						txlist, block.getTimestamp(), block.getCoinbase()));
-				try {
-					addBlockToDb(block);
-					publishBlock(block);
-					// 6
-					int tdInNewBlock = getTotalDifficulty(block);
-
-					if (tdInNewBlock > blockCurrent.getTotalDifficulty()) {
-						blockCurrent = block;
-					}
-
-					resp = buildMsgResp(block);
-				} catch (Exception ex) {
-
-				}
-
-				break;
 			case MSG:
 				resp = buildMsgResp(msg);
 				break;
@@ -83,11 +61,45 @@ public class EthereumClient {
 				checkState(txFoundEnough(addr));
 				try {
 					addLocalTxList(txobj);
+					processOntoCurrentBlock(blockCurrent);
 					publishTx(txobj);
 					resp = buildMsgResp(txobj);
 				} catch (Exception ex) {
 
 				}
+				break;
+			case BLOCK:
+				BlockObj block = buildBlockObj(msg);
+				// 3 parent check
+				BlockObj blockParent = getBlockParent(block.getParentId());
+				checkState(isBlockParentInDb(blockParent));
+				// 4 
+				checkState(isProofOfWorkValid(block,block.getUncles()));
+				// 5 GHOST select
+				checkState(isBlockParentAndUnclesSameParent(block.getUncles()));
+				// 6 timestamp
+				checkState(block.getTimestamp()>blockParent.getTimestamp());
+				checkState(helpIsFuture15Mins(block.getTimestamp()));
+				checkState(isMatch(block.getTotalDifficulty(),block.getNumber()));
+				// 7
+				List<TxObj> txlist = getTxList();
+				checkState(isStateUpdaterOutputNotSame(blockParent,
+						txlist, block.getTimestamp(), block.getCoinbase()));
+				try {
+					addBlockToDb(block);
+					publishBlock(block);
+					// 6
+					int tdInNewBlock = getTotalDifficulty(block);
+					
+					if (tdInNewBlock > blockCurrent.getTotalDifficulty()) {
+						blockCurrent = block;
+					}
+					
+					resp = buildMsgResp(block);
+				} catch (Exception ex) {
+					
+				}
+				
 				break;
 			default:
 				break;
@@ -96,6 +108,31 @@ public class EthereumClient {
 
 		checkNotNull(resp);
 		return resp;
+	}
+
+	private boolean isMatch(int totalDifficulty, int number) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private boolean helpIsFuture15Mins(long timestamp) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private BlockObj getBlockParent(String parent) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	private boolean isProofOfWorkValid(BlockObj block, String uncles) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	private void processOntoCurrentBlock(BlockObj blockCurrent) {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private BlockObj getBlockCurrent() {
@@ -123,7 +160,7 @@ public class EthereumClient {
 
 	}
 
-	private boolean isStateUpdaterOutputNotSame(String parent,
+	private boolean isStateUpdaterOutputNotSame(BlockObj blockParent,
 			List<TxObj> txlist, long timestamp, String coinbase) {
 		// TODO Auto-generated method stub
 		return false;
@@ -139,7 +176,7 @@ public class EthereumClient {
 		return false;
 	}
 
-	private boolean isBlockParentInDb(String parent) {
+	private boolean isBlockParentInDb(BlockObj blockParent) {
 		// TODO Auto-generated method stub
 		return false;
 	}
@@ -184,6 +221,14 @@ public class EthereumClient {
 
 	private boolean isExistMessage(byte[] digest) {
 		return false;
+	}
+	
+	private byte[] hashSha3(byte[] data) {
+		DigestSHA3 md = new SHA3.Digest256();
+		md.update(data);
+		byte[] digest = md.digest();
+		System.out.println(Hex.toHexString(digest));
+		return digest;
 	}
 
 	public static void main(String[] args) {

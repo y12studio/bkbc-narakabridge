@@ -1,25 +1,18 @@
-package org.blackbananacoin.narakabridge;
+package org.blackbananacoin.narakabridge.foo;
 
 public class BlockObj {
+	
+	private int number;
 
-	private String parent;
+	private String parentId;
 	
 	private String uncles;
 	
 	private String coinbase;
 	
 	private int totalDifficulty;
-	
-	
+		
 	private long timestamp;
-
-	public String getParent() {
-		return parent;
-	}
-
-	public void setParent(String parent) {
-		this.parent = parent;
-	}
 
 	public String getUncles() {
 		return uncles;
@@ -51,5 +44,21 @@ public class BlockObj {
 
 	public void setTotalDifficulty(int totalDifficulty) {
 		this.totalDifficulty = totalDifficulty;
+	}
+
+	public String getParentId() {
+		return parentId;
+	}
+
+	public void setParentId(String parentId) {
+		this.parentId = parentId;
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public void setNumber(int number) {
+		this.number = number;
 	}
 }

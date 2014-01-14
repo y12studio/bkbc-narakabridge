@@ -1,5 +1,5 @@
 package org.blackbananacoin.narakabridge;
 
-public class Address {
+public class Manager {
 
 }

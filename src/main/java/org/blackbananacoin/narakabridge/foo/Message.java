@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.blackbananacoin.narakabridge;
+package org.blackbananacoin.narakabridge.foo;
 
 public class Message {
 	
