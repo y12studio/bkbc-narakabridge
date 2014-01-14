@@ -46,7 +46,7 @@ public class EthKey {
 	}
 
 	public EthKey(byte[] seed) {
-		priv = new BigInteger(1, hashSha3(seed));
+		priv = new BigInteger(1, Utils.sha3(seed));
 		pub = privateToPublicKey(priv);
 		checkNotNull(pub);
 		checkPositionIndex(19, pub.length);
@@ -57,14 +57,6 @@ public class EthKey {
 
 	public EthKey() {
 		this(secureRandom.generateSeed(32));
-	}
-
-	private static byte[] hashSha3(byte[] data) {
-		DigestSHA3 md = new SHA3.Digest256();
-		md.update(data);
-		byte[] digest = md.digest();
-		// System.out.println(Hex.toHexString(digest));
-		return digest;
 	}
 
 	public static byte[] privateToPublicKey(BigInteger privKey) {
