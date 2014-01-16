@@ -22,12 +22,11 @@ import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.Date;
 
-import org.bouncycastle.jcajce.provider.digest.SHA3;
-import org.bouncycastle.jcajce.provider.digest.SHA3.DigestSHA3;
-import org.spongycastle.asn1.sec.SECNamedCurves;
-import org.spongycastle.asn1.x9.X9ECParameters;
-import org.spongycastle.crypto.params.ECDomainParameters;
-import org.spongycastle.math.ec.ECPoint;
+import org.bouncycastle.asn1.sec.SECNamedCurves;
+import org.bouncycastle.asn1.x9.X9ECParameters;
+import org.bouncycastle.crypto.params.ECDomainParameters;
+import org.bouncycastle.math.ec.ECPoint;
+
 
 public class EthKey {
 
